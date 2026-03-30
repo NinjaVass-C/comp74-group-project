@@ -1,15 +1,9 @@
-# group_project
+# COMP74 (Web Services) Group Project
 
-To install dependencies:
+[Design Document](https://docs.google.com/document/d/1FHtUM6zzg2CVdcccEVfskXuuGdrWePffiaDJGt7Xwzs/edit?usp=sharing)
 
-```bash
-bun install
+## Usage
 ```
-
-To run:
-
-```bash
-bun run index.ts
+bun i
+bun run start
 ```
-
-This project was created using `bun init` in bun v1.3.5. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
