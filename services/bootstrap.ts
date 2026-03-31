@@ -9,18 +9,26 @@ import { ConsoleService } from "./cli/ConsoleService";
 import { LogSeverity } from "../models/logging/LogSeverity";
 import type { WebserverEndpoint } from "../endpoints/WebserverEndpoint";
 import { BunWebserverService } from "./webserver/BunWebserverService";
+import type { ILaunchArgumentsProvider } from "./cli/ILaunchArgumentsProvider";
+import { LaunchArgumentsProvider } from "./cli/LaunchArgumentsProvider";
 
 export const TOKENS = {
     logger: token<ILoggingService>("logger"),
     console: token<IConsoleService>("console"),
-    webserver: token<IWebserverService>("webserver")
+    webserver: token<IWebserverService>("webserver"),
+    launchArgs: token<ILaunchArgumentsProvider>("launchArgs")
 }
 
 export function bootstrap(endpoints: WebserverEndpoint[]): Container {
     const dependencies = new Container();
+
+    const launchArgumentsService = new LaunchArgumentsProvider();
+    launchArgumentsService.initLaunchArguments(Bun.argv);
+    dependencies.bind(TOKENS.launchArgs).toConstant(launchArgumentsService);
+
     const loggingService = new GlobalLoggingService([
         new ConsoleLoggingStrategy(),
-        new FileLoggingStrategy("output.log")
+        new FileLoggingStrategy("latest.log")
     ]);
     dependencies.bind(TOKENS.logger).toConstant(loggingService);
 
