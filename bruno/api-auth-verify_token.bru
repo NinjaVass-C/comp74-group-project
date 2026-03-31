@@ -1,0 +1,22 @@
+meta {
+  name: /api/auth/verify_token
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:3000/api/auth/verify_token
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJ1c2VybmFtZSI6InRlc3R1c2VyIn0sImV4cCI6MTc3NDk3OTM3NH0.C-Df3QQb4koPLQejQZjI2KSBfohZMIhVLsRc2WiZWyM"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

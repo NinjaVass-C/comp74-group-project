@@ -4,7 +4,7 @@ import type { WebserverEndpoint } from "../../endpoints/WebserverEndpoint";
 import type { ILoggingService } from "../logging/ILoggingService";
 import { LogSeverity } from "../../models/logging/LogSeverity";
 import type { Container } from "brandi";
-import { TOKENS } from "../bootstrap";
+import { DI_TOKENS } from "../bootstrap";
 
 export class BunWebserverService implements IWebserverService {
     endpoints: WebserverEndpoint[];
@@ -14,7 +14,7 @@ export class BunWebserverService implements IWebserverService {
     constructor(container: Container, webserverEndpoints: WebserverEndpoint[]) {
         this.endpoints = webserverEndpoints;
         this.container = container;
-        this.logger = container.get(TOKENS.logger);
+        this.logger = container.get(DI_TOKENS.logger);
     }
     start(port: number): void {
         this.endpoints.forEach(endpoint => endpoint.injectDependencies(this.container));

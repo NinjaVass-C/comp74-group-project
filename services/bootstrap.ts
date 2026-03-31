@@ -12,26 +12,39 @@ import { BunWebserverService } from "./webserver/BunWebserverService";
 import type { ILaunchArgumentsProvider } from "./cli/ILaunchArgumentsProvider";
 import { LaunchArgumentsProvider } from "./cli/LaunchArgumentsProvider";
 
-export const TOKENS = {
+/**
+ * DI tokens for the application's services. These are used to register and retrieve services from the DI container.
+ */
+export const DI_TOKENS = {
     logger: token<ILoggingService>("logger"),
     console: token<IConsoleService>("console"),
     webserver: token<IWebserverService>("webserver"),
     launchArgs: token<ILaunchArgumentsProvider>("launchArgs")
 }
 
+/**
+ * Initializes the dependency injection container with the application's services and their dependencies. 
+ * This function is called at the start of the application to set up all necessary services before they are used.
+ * 
+ * @param {WebserverEndpoint[]} endpoints - An array of webserver endpoints to be registered with the webserver service.
+ * @returns {Container} The initialized DI container with all services registered.
+ */
 export function bootstrap(endpoints: WebserverEndpoint[]): Container {
     const dependencies = new Container();
 
+    /** Launch Arguments */
     const launchArgumentsService = new LaunchArgumentsProvider();
     launchArgumentsService.initLaunchArguments(Bun.argv);
-    dependencies.bind(TOKENS.launchArgs).toConstant(launchArgumentsService);
+    dependencies.bind(DI_TOKENS.launchArgs).toConstant(launchArgumentsService);
 
+    /** Logging */
     const loggingService = new GlobalLoggingService([
         new ConsoleLoggingStrategy(),
         new FileLoggingStrategy("latest.log")
     ]);
-    dependencies.bind(TOKENS.logger).toConstant(loggingService);
+    dependencies.bind(DI_TOKENS.logger).toConstant(loggingService);
 
+    /** Console I/O */
     const console: IConsoleService = new ConsoleService({
         quit(this: ConsoleService, args: string[]) {
             this.logger.log("Shutting down application...", LogSeverity.INFO);
@@ -39,10 +52,11 @@ export function bootstrap(endpoints: WebserverEndpoint[]): Container {
         }
     }, dependencies);
 
-    dependencies.bind(TOKENS.console).toConstant(console);
-    
+    dependencies.bind(DI_TOKENS.console).toConstant(console);
+
+    /** Webserver */
     const webserver = new BunWebserverService(dependencies, endpoints);
-    dependencies.bind(TOKENS.webserver).toConstant(webserver);
+    dependencies.bind(DI_TOKENS.webserver).toConstant(webserver);
 
     return dependencies;
 }

@@ -3,7 +3,7 @@ import { LogSeverity } from "../../models/logging/LogSeverity";
 import type { ILoggingService } from "../logging/ILoggingService";
 import { FileLoggingStrategy } from "../logging/strategies/FileLoggingStrategy";
 import type { IConsoleService } from "./IConsoleService";
-import { TOKENS } from "../bootstrap";
+import { DI_TOKENS } from "../bootstrap";
 import readline from 'node:readline';
 
 export class ConsoleService implements IConsoleService {
@@ -14,7 +14,7 @@ export class ConsoleService implements IConsoleService {
     constructor(commands: { [key: string]: (this: ConsoleService, args: string[]) => void }, container: Container) {
         this.commandRegistry = new Map();
         this.container = container;
-        this.logger = container.get(TOKENS.logger);
+        this.logger = container.get(DI_TOKENS.logger);
 
         for (const [key, command] of Object.entries(commands)) {
             this.commandRegistry.set(key, command.bind(this));
@@ -22,6 +22,8 @@ export class ConsoleService implements IConsoleService {
     }
 
     start() {
+        this.logger.log("COMP74 Web API (Julian Seitz, Connor Vass, and Ben Wartman) - CLI Initialized successfully!", LogSeverity.INFO);
+
         const rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout,
