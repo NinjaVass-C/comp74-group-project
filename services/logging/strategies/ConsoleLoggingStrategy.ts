@@ -4,6 +4,9 @@ import { LogSeverity, type LogSeverityType } from "../../../models/logging/LogSe
 
 export class ConsoleLoggingStrategy implements ILoggingStrategy {
     log(message: string, severity: LogSeverityType = LogSeverity.INFO): void {
-        console.log(`[${new Date().toLocaleString()}] [${severity.toUpperCase()}] ${message}`);
+        const timestamp = new Date().toLocaleString();
+        const formattedMessage = `[${timestamp}] [${severity.toUpperCase()}] ${message}`;
+
+        process.stdout.write(`\r\x1b[K${formattedMessage}\n `);
     }
 }

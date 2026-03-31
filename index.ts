@@ -7,6 +7,7 @@ import type { ILoggingService } from "./services/logging/ILoggingService";
 import { ConsoleLoggingStrategy } from './services/logging/strategies/ConsoleLoggingStrategy';
 import { FileLoggingStrategy } from "./services/logging/strategies/FileLoggingStrategy";
 import { BunWebserverService } from "./services/webserver/BunWebserverService";
+import readline from "node:readline";
 
 function main(args: string[]) {
     const loggingService: ILoggingService = new GlobalLoggingService([
@@ -28,27 +29,23 @@ function main(args: string[]) {
     loggingService.log("COMP74 Bun API by Julian Seitz, Connor Vass, and Ben Wartman initialized successfully!", LogSeverity.INFO);
     webserver.start(3000);
 
-    process.stdin.setEncoding("utf8");
-    process.stdin.resume();
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+        terminal: true,
+        prompt: "> "
+    });
 
-    let inputBuffer = "";
-    process.stdout.write("> ");
+    rl.prompt();
 
-    process.stdin.on("data", (chunk: string) => {
-        inputBuffer += chunk;
-
-        let newlineIndex = inputBuffer.indexOf("\n");
-        while (newlineIndex !== -1) {
-            const line = inputBuffer.slice(0, newlineIndex).replace(/\r$/, "");
-            inputBuffer = inputBuffer.slice(newlineIndex + 1);
-
-            if (line.trim().length > 0) {
-                console.handle(line);
-            }
-
-            process.stdout.write("> ");
-            newlineIndex = inputBuffer.indexOf("\n");
+    rl.on("line", (line) => {
+        const command = line.trim();
+        if (command) {
+            console.handle(command);
         }
+        rl.prompt();
+    }).on("close", () => {
+        process.exit(0);
     });
 }
 
