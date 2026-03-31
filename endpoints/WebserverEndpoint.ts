@@ -1,4 +1,5 @@
 import type { Container } from "brandi";
+import type { BunRequest } from "bun";
 
 export class WebserverEndpoint {
     protected container?: Container;
@@ -19,7 +20,7 @@ export class WebserverEndpoint {
         throw new Error("Method not implemented.");
     }
 
-    toBunRoute(): { method: string; path: string; handler: (request: Request) => Promise<Response> }[] {
+    toBunRoute(): { method: string; path: string; handler: (request: BunRequest) => Promise<Response> }[] {
         throw new Error("Method not implemented.");
     }
 

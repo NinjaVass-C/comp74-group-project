@@ -16,6 +16,7 @@ export class BunWebserverService implements IWebserverService {
         this.container = container;
         this.logger = container.get(DI_TOKENS.logger);
     }
+
     start(port: number): void {
         this.endpoints.forEach(endpoint => endpoint.injectDependencies(this.container));
         const routes = this.endpoints.map(endpoint => endpoint.toBunRoute()).flat();
@@ -28,6 +29,35 @@ export class BunWebserverService implements IWebserverService {
                 const method = request.method;
 
                 const route = routes.find(r => r.method === method && r.path === url.pathname);
+                if (!route) {
+                    // Try to match dynamic routes (e.g., /api/symbol/:symbol)
+                    const dynamicRoute = routes.find(r => {
+                        if (r.method !== method) return false;
+                        const routeParts = r.path.split("/").filter(Boolean);
+                        const urlParts = url.pathname.split("/").filter(Boolean);
+                        if (routeParts.length !== urlParts.length) return false;
+                        return routeParts.every((part, index) => part.startsWith(":") || part === urlParts[index]);
+                    });
+
+                    if (dynamicRoute) {
+                        // Extract params
+                        const routeParts = dynamicRoute.path.split("/").filter(Boolean);
+                        const urlParts = url.pathname.split("/").filter(Boolean);
+                        const params: Record<string, string> = {};
+                        routeParts.forEach((part, index) => {
+                            if (part.startsWith(":")) {
+                                const paramName = part.slice(1);
+                                if (urlParts[index]) {
+                                    params[paramName] = urlParts[index];
+                                }
+                            }
+                        });
+                        // Attach params to request
+                        (request as any).params = params;
+                        return dynamicRoute.handler(request);
+                    }
+                }
+
                 if (route) {
                     return route.handler(request);
                 } else {

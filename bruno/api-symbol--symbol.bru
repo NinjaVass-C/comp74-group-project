@@ -1,0 +1,20 @@
+meta {
+  name: /api/symbol/:symbol
+  type: http
+  seq: 6
+}
+
+get {
+  url: http://localhost:3000/api/symbol/:symbol
+  body: none
+  auth: inherit
+}
+
+params:path {
+  symbol: AAPL
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
