@@ -17,11 +17,17 @@ export class IndexEndpoint extends WebserverEndpoint {
             )
         );
     }
+
     override toBunRoute(): { method: string; path: string; handler: (request: Request) => Promise<Response>; }[] {
         return [
             {
                 method: "GET",
                 path: "/",
+                handler: this.get.bind(this)
+            },
+            {
+                method: "GET",
+                path: "/api/",
                 handler: this.get.bind(this)
             }
         ];

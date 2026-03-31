@@ -3,16 +3,21 @@ import type { IWebserverService } from "./IWebserverService";
 import type { WebserverEndpoint } from "../../endpoints/WebserverEndpoint";
 import type { ILoggingService } from "../logging/ILoggingService";
 import { LogSeverity } from "../../models/logging/LogSeverity";
+import type { Container } from "brandi";
+import { TOKENS } from "../bootstrap";
 
 export class BunWebserverService implements IWebserverService {
     endpoints: WebserverEndpoint[];
     logger: ILoggingService;
+    container: Container;
 
-    constructor(logger: ILoggingService, webserverEndpoints: WebserverEndpoint[]) {
+    constructor(container: Container, webserverEndpoints: WebserverEndpoint[]) {
         this.endpoints = webserverEndpoints;
-        this.logger = logger;
+        this.container = container;
+        this.logger = container.get(TOKENS.logger);
     }
     start(port: number): void {
+        this.endpoints.forEach(endpoint => endpoint.injectDependencies(this.container));
         const routes = this.endpoints.map(endpoint => endpoint.toBunRoute()).flat();
         const logger = this.logger;
 
@@ -32,10 +37,11 @@ export class BunWebserverService implements IWebserverService {
             }
         });
 
-        this.logger.log("Bun webserver started on port " + port, LogSeverity.INFO);
+        this.logger.log(`Webserver started on port: ${port}`, LogSeverity.INFO);
     }
-    stop(): void {
 
+    stop(): void {
+        throw new Error("Not implemented.");
     }
 
 }

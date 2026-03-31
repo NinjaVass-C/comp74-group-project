@@ -1,52 +1,28 @@
-import { IndexEndpoint } from "./endpoints/IndexEndpoint";
+import { Command } from "commander";
 import { LogSeverity } from "./models/logging/LogSeverity";
-import { ConsoleService } from "./services/cli/ConsoleService";
-import type { IConsoleService } from "./services/cli/IConsoleService";
-import { GlobalLoggingService } from "./services/logging/GlobalLoggingService";
-import type { ILoggingService } from "./services/logging/ILoggingService";
-import { ConsoleLoggingStrategy } from './services/logging/strategies/ConsoleLoggingStrategy';
-import { FileLoggingStrategy } from "./services/logging/strategies/FileLoggingStrategy";
-import { BunWebserverService } from "./services/webserver/BunWebserverService";
-import readline from "node:readline";
+import { bootstrap, TOKENS } from "./services/bootstrap";
+import { ENDPOINTS } from "./models/endpoints";
 
-function main(args: string[]) {
-    const loggingService: ILoggingService = new GlobalLoggingService([
-        new ConsoleLoggingStrategy(),
-        new FileLoggingStrategy("output.log")
-    ]);
+function app(args: string[]) {
+    const program = new Command();
 
-    const console: IConsoleService = new ConsoleService({
-        quit: () => {
-            loggingService.log("Shutting down application...", LogSeverity.INFO);
-            process.exit(0);
-        }
-    }, loggingService);
+    program
+        .name("COMP74 API")
+        .option("-p, --port <number>", "Port to run the webserver on", process.env.WEBSERVER_PORT || "3000")
+        .parse(args);
 
-    const webserver = new BunWebserverService(loggingService, [
-        new IndexEndpoint()
-    ]);
+    const options = program.opts();
+    const port = parseInt(options.port, 10);
 
+    const app = bootstrap(ENDPOINTS);
+
+    const loggingService = app.get(TOKENS.logger);
+    const webserver = app.get(TOKENS.webserver);
+    const console = app.get(TOKENS.console);
+
+    console.start();
     loggingService.log("COMP74 Bun API by Julian Seitz, Connor Vass, and Ben Wartman initialized successfully!", LogSeverity.INFO);
-    webserver.start(3000);
-
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-        terminal: true,
-        prompt: "> "
-    });
-
-    rl.prompt();
-
-    rl.on("line", (line) => {
-        const command = line.trim();
-        if (command) {
-            console.handle(command);
-        }
-        rl.prompt();
-    }).on("close", () => {
-        process.exit(0);
-    });
+    webserver.start(port);
 }
 
-main(Bun.argv);
+app(Bun.argv);

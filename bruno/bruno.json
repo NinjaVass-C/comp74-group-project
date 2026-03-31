@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "comp74-group-project",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

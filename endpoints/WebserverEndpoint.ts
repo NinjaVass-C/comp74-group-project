@@ -1,5 +1,8 @@
+import type { Container } from "brandi";
 
 export class WebserverEndpoint {
+    protected container?: Container;
+
     get(request: Request): Promise<Response> {
         throw new Error("Method not implemented.");
     }
@@ -18,5 +21,9 @@ export class WebserverEndpoint {
 
     toBunRoute(): { method: string; path: string; handler: (request: Request) => Promise<Response> }[] {
         throw new Error("Method not implemented.");
+    }
+
+    injectDependencies(container: Container): void {
+        this.container = container;
     }
 }
