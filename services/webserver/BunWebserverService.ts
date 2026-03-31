@@ -1,27 +1,38 @@
 import type { BunRequest } from "bun";
 import type { IWebserverService } from "./IWebserverService";
-import type { IWebserverEndpoint } from "./IWebserverEndpoint";
+import type { WebserverEndpoint } from "../../endpoints/WebserverEndpoint";
+import type { ILoggingService } from "../logging/ILoggingService";
+import { LogSeverity } from "../../models/logging/LogSeverity";
 
 export class BunWebserverService implements IWebserverService {
-    endpoints: IWebserverEndpoint[];
+    endpoints: WebserverEndpoint[];
+    logger: ILoggingService;
 
-    constructor(webserverEndpoints: IWebserverEndpoint[]) {
+    constructor(logger: ILoggingService, webserverEndpoints: WebserverEndpoint[]) {
         this.endpoints = webserverEndpoints;
+        this.logger = logger;
     }
     start(port: number): void {
         const routes = this.endpoints.map(endpoint => endpoint.toBunRoute()).flat();
+        const logger = this.logger;
+
         Bun.serve({
             port,
-            fetch: async (request: BunRequest) => {
+            fetch(request: BunRequest) {
                 const url = new URL(request.url);
-                const route = routes.find(r => r.method === request.method && r.path === url.pathname);
+                const method = request.method;
+
+                const route = routes.find(r => r.method === method && r.path === url.pathname);
                 if (route) {
-                    return await route.handler(request);
+                    return route.handler(request);
                 } else {
+                    logger.log(`No route found for ${method} ${url.pathname}`, LogSeverity.WARNING);
                     return new Response("Not Found", { status: 404 });
                 }
             }
         });
+
+        this.logger.log("Bun webserver started on port " + port, LogSeverity.INFO);
     }
     stop(): void {
 
