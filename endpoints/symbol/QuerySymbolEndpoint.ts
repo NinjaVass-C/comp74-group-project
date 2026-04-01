@@ -1,23 +1,18 @@
 import type { BunRequest } from "bun";
 import { WebserverEndpoint } from "../WebserverEndpoint";
 import YahooFinance from "yahoo-finance2/src/index.ts";
+import { Endpoint } from "../../models/endpoints";
 
+@Endpoint
 export class QuerySymbolEndpoint extends WebserverEndpoint {
     override async get(request: BunRequest): Promise<Response> {
         const { symbol } = request.params;
 
         if (!symbol) {
             return Promise.resolve(
-                new Response(
-                    JSON.stringify({
-                        error: "Missing 'symbol' query parameter"
-                    }),
-                    {  
-                        status: 400,
-                        headers: {
-                            "Content-Type": "application/json"
-                        }
-                    }
+                Response.json(
+                    { error: "Missing 'symbol' query parameter" },
+                    { status: 400 }
                 )
             );
         }
@@ -30,31 +25,17 @@ export class QuerySymbolEndpoint extends WebserverEndpoint {
 
         if (!quote) {
             return Promise.resolve(
-                new Response(
-                    JSON.stringify({
-                        error: `No data found for symbol: ${symbol}`
-                    }),
-                    {
-                        status: 404,
-                        headers: {
-                            "Content-Type": "application/json"
-                        }
-                    }
-                )
+                Response.json(
+                    { error: `No data found for symbol: ${symbol}` },
+                    { status: 404, }
+                ),
             );
         }
 
         return Promise.resolve(
-            new Response(
-                JSON.stringify({
-                    ...quote
-                }),
-                {
-                    status: 200,
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }
+            Response.json(
+                { ...quote },
+                { status: 200 }
             )
         );
     }

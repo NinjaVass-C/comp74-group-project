@@ -1,15 +1,14 @@
-import { LoginEndpoint } from "../endpoints/auth/LoginEndpoint";
-import { RegisterEndpoint } from "../endpoints/auth/RegisterEndpoint";
-import { VerifyTokenEndpoint } from "../endpoints/auth/VerifyTokenEndpoint";
-import { IndexEndpoint } from "../endpoints/IndexEndpoint";
-import { QuerySymbolEndpoint } from "../endpoints/symbol/QuerySymbolEndpoint";
-import { QuerySymbolValueEndpoint } from "../endpoints/symbol/QuerySymbolValueEndpoint";
+import type { WebserverEndpoint } from "../endpoints/WebserverEndpoint";
 
-export const ENDPOINTS = [
-    new IndexEndpoint(),
-    new RegisterEndpoint(),
-    new LoginEndpoint(),
-    new VerifyTokenEndpoint(),
-    new QuerySymbolEndpoint(),
-    new QuerySymbolValueEndpoint()
-]
+/**
+ * Source of truth for all registered endpoints.
+ */
+export const ENDPOINTS: Set<WebserverEndpoint> = new Set();
+
+/**
+ * Endpoint decorator to register webserver endpoints.
+ * @param endpoint 
+ */
+export function Endpoint(endpoint: Function) {
+    ENDPOINTS.add(new (endpoint as new () => WebserverEndpoint)());
+}

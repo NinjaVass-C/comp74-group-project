@@ -1,54 +1,44 @@
 import { eq } from "drizzle-orm";
 import { database } from "../../services/db/drizzle";
-import { usersTable } from "../../services/db/schema";
+import { usersTable } from '../../services/db/schema';
 import { WebserverEndpoint } from "../WebserverEndpoint";
 import { SignJWT } from "jose";
 import { DI_TOKENS } from "../../services/bootstrap";
 import { LogSeverity } from "../../models/logging/LogSeverity";
 import { TokenPayload } from "../../models/auth/TokenPayload";
+import { Endpoint } from "../../models/endpoints";
 
+@Endpoint
 export class LoginEndpoint extends WebserverEndpoint {
     override async post(request: Request): Promise<Response> {
         try {
             const { username, password } = await request.json();
 
             if (!username || !password) {
-                return new Response(
-                    JSON.stringify({ error: "Username and password are required." }),
-                    {
-                        status: 400,
-                        headers: {
-                            "Content-Type": "application/json"
-                        }
-                    }
+                return Response.json(
+                    { error: "Username and password are required." },
+                    { status: 400 }
                 );
             }
 
-            const user = await database.select().from(usersTable).where(eq(usersTable.username, username)).get();
+            const user = database.select()
+                            .from(usersTable)
+                            .where(eq(usersTable.username, username))
+                            .get();
 
             if (!user) {
-                return new Response(
-                    JSON.stringify({ error: "Invalid username or password." }),
-                    {
-                        status: 401,
-                        headers: {
-                            "Content-Type": "application/json"
-                        }
-                    }
+                return Response.json(
+                    { error: "Invalid username or password." },
+                    { status: 401 }
                 );
             }
 
             const passwordMatch = await Bun.password.verify(password, user.password);
 
             if (!passwordMatch) {
-                return new Response(
-                    JSON.stringify({ error: "Invalid username or password." }),
-                    {
-                        status: 401,
-                        headers: {
-                            "Content-Type": "application/json"
-                        }
-                    }
+                return Response.json(
+                    { error: "Invalid username or password." },
+                    { status: 401 }
                 );
             }
 
@@ -60,14 +50,9 @@ export class LoginEndpoint extends WebserverEndpoint {
                 .setExpirationTime("2h")
                 .sign(encoder);
 
-            return new Response(
-                JSON.stringify({ message: "Login successful.", token: jwt }),
-                {
-                    status: 200,
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }
+            return Response.json(
+                { message: "Login successful.", token: jwt },
+                { status: 200 }
             );
         } catch (error) {
             if (this.container) {
@@ -75,14 +60,9 @@ export class LoginEndpoint extends WebserverEndpoint {
                 logger.log(`User login failed: ${error instanceof Error ? error.message : String(error)}`, LogSeverity.ERROR);
             }
 
-            return new Response(
-                JSON.stringify({ error: "Failed to login.", details: error instanceof Error ? error.message : String(error) }),
-                {
-                    status: 500,
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }
+            return Response.json(
+                { error: "Failed to login.", details: error instanceof Error ? error.message : String(error) },
+                { status: 500 }
             );
         }
     }

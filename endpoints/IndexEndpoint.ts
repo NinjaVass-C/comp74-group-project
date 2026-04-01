@@ -1,18 +1,17 @@
+import { Endpoint } from "../models/endpoints";
 import { WebserverEndpoint } from "./WebserverEndpoint";
 
+@Endpoint
 export class IndexEndpoint extends WebserverEndpoint {
     override get(request: Request): Promise<Response> {
         return Promise.resolve(
-            new Response(
-                JSON.stringify({
+            Response.json(
+                {
                     message: "COMP74 API is running",
                     timestamp: new Date().toISOString()
-                }),
+                },
                 {
-                    status: 200,
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
+                    status: 200
                 }
             )
         );

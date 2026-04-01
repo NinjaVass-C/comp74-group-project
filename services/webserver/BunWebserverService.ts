@@ -6,23 +6,33 @@ import { LogSeverity } from "../../models/logging/LogSeverity";
 import type { Container } from "brandi";
 import { DI_TOKENS } from "../bootstrap";
 
+/**
+ * Bun-implementation of IWebserverService.
+ * 
+ * Uses Bun HTTP server to handle requests
+ */
 export class BunWebserverService implements IWebserverService {
     endpoints: WebserverEndpoint[];
     logger: ILoggingService;
     container: Container;
+    server: Bun.Server<never> | null = null;
 
-    constructor(container: Container, webserverEndpoints: WebserverEndpoint[]) {
+    public constructor(container: Container, webserverEndpoints: WebserverEndpoint[]) {
         this.endpoints = webserverEndpoints;
         this.container = container;
         this.logger = container.get(DI_TOKENS.logger);
     }
 
-    start(port: number): void {
+    /**
+     * Starts the Bun webserver on the specified port, listening for registered endpoints
+     * @param port The port number to start the server on
+     */
+    public start(port: number): void {
         this.endpoints.forEach(endpoint => endpoint.injectDependencies(this.container));
-        const routes = this.endpoints.map(endpoint => endpoint.toBunRoute()).flat();
+        const routes = Array.from(this.endpoints).map(endpoint => endpoint.toBunRoute()).flat();
         const logger = this.logger;
 
-        Bun.serve({
+        this.server = Bun.serve({
             port,
             fetch(request: BunRequest) {
                 const url = new URL(request.url);
@@ -67,11 +77,17 @@ export class BunWebserverService implements IWebserverService {
             }
         });
 
-        this.logger.log(`Webserver started on port: ${port}`, LogSeverity.INFO);
+        logger.log(`Webserver started on port: ${port}`, LogSeverity.INFO);
     }
 
-    stop(): void {
-        throw new Error("Not implemented.");
+    /**
+     * Stops the Bun webserver if it is currently running
+     */
+    public stop(): void {
+        if (this.server) {
+            this.server.stop();
+            this.server = null;
+        }
     }
 
 }
