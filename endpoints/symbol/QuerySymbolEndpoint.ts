@@ -17,7 +17,7 @@ export class QuerySymbolEndpoint extends WebserverEndpoint {
             );
         }
 
-        const yahooFinance = new YahooFinance({ suppressNotices: ['yahooSurvey'] });
+        const yahooFinance = new YahooFinance();
         const quote = await yahooFinance.quote(symbol).catch((error) => {
             console.error(`Error fetching data for symbol ${symbol}:`, error);
             return null;

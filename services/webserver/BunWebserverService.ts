@@ -12,23 +12,15 @@ import { DI_TOKENS } from "../bootstrap";
  * Uses Bun HTTP server to handle requests
  */
 export class BunWebserverService implements IWebserverService {
-    endpoints: WebserverEndpoint[];
-    logger: ILoggingService;
-    container: Container;
     server: Bun.Server<never> | null = null;
 
-    public constructor(container: Container, webserverEndpoints: WebserverEndpoint[]) {
-        this.endpoints = webserverEndpoints;
-        this.container = container;
-        this.logger = container.get(DI_TOKENS.logger);
-    }
+    public constructor(private endpoints: WebserverEndpoint[], private logger: ILoggingService) { }
 
     /**
      * Starts the Bun webserver on the specified port, listening for registered endpoints
      * @param port The port number to start the server on
      */
     public start(port: number): void {
-        this.endpoints.forEach(endpoint => endpoint.injectDependencies(this.container));
         const routes = Array.from(this.endpoints).map(endpoint => endpoint.toBunRoute()).flat();
         const logger = this.logger;
 

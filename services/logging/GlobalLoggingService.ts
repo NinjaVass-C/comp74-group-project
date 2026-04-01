@@ -5,10 +5,7 @@ import type { ILoggingStrategy } from "./ILoggingStrategy";
  * The global logging service that manages multiple logging strategies.
  */
 export class GlobalLoggingService implements ILoggingService {
-    private strategies: ILoggingStrategy[] = [];
-    constructor(_strategies: ILoggingStrategy[] = []) {
-        this.strategies = _strategies;
-    }
+    constructor(private strategies: ILoggingStrategy[] = []) { }
 
     addStrategy(strategy: ILoggingStrategy): void {
         this.strategies.push(strategy);
