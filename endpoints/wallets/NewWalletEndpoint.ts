@@ -2,8 +2,8 @@ import { jwtVerify } from "jose";
 import { Endpoint } from "../../models/endpoints";
 import { WebserverEndpoint } from "../WebserverEndpoint";
 import type { TokenPayload } from "../../models/auth/TokenPayload";
-import { database } from "../../services/db/drizzle";
-import { walletsTable } from "../../services/db/schema";
+import { walletsTable } from "../../services/db/drizzle/schema";
+import { DI_TOKENS } from "../../services/bootstrap";
 
 @Endpoint
 export class NewWalletsEndpoint extends WebserverEndpoint {
@@ -51,6 +51,7 @@ export class NewWalletsEndpoint extends WebserverEndpoint {
             );
         }
 
+        const database = await this.container.get(DI_TOKENS.database).getConnection();
         const wallet = database.insert(walletsTable)
             .values({
                 userId: userToken.payload.user.id,

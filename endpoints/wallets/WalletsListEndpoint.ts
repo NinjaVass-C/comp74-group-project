@@ -2,9 +2,9 @@ import { jwtVerify } from "jose";
 import { Endpoint } from "../../models/endpoints";
 import { WebserverEndpoint } from "../WebserverEndpoint";
 import type { TokenPayload } from "../../models/auth/TokenPayload";
-import { database } from "../../services/db/drizzle";
-import { walletsTable } from "../../services/db/schema";
+import { walletsTable } from "../../services/db/drizzle/schema";
 import { eq } from 'drizzle-orm';
+import { DI_TOKENS } from "../../services/bootstrap";
 
 @Endpoint
 export class WalletsListEndpoint extends WebserverEndpoint {
@@ -29,6 +29,7 @@ export class WalletsListEndpoint extends WebserverEndpoint {
             );
         }
 
+        const database = await this.container.get(DI_TOKENS.database).getConnection();
         const wallets = database.select().from(walletsTable)
             .where(eq(walletsTable.userId, userToken.payload.user.id))
             .all();

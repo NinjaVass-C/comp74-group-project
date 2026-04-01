@@ -11,6 +11,8 @@ import type { WebserverEndpoint } from "../endpoints/WebserverEndpoint";
 import { BunWebserverService } from "./webserver/BunWebserverService";
 import type { ILaunchArgumentsProvider } from "./cli/ILaunchArgumentsProvider";
 import { LaunchArgumentsProvider } from "./cli/LaunchArgumentsProvider";
+import type { IDatabaseService } from "./db/IDatabaseService";
+import { DrizzleDatabaseService } from "./db/drizzle/DrizzleDatabaseService";
 
 /**
  * DI tokens for the application's services. These are used to register and retrieve services from the DI container.
@@ -19,7 +21,8 @@ export const DI_TOKENS = {
     logger: token<ILoggingService>("logger"),
     console: token<IConsoleService>("console"),
     webserver: token<IWebserverService>("webserver"),
-    launchArgs: token<ILaunchArgumentsProvider>("launchArgs")
+    launchArgs: token<ILaunchArgumentsProvider>("launchArgs"),
+    database: token<IDatabaseService>("database")
 }
 
 /**
@@ -57,6 +60,10 @@ export function bootstrap(endpoints: WebserverEndpoint[]): Container {
     /** Webserver */
     const webserver = new BunWebserverService(dependencies, endpoints);
     dependencies.bind(DI_TOKENS.webserver).toConstant(webserver);
+
+    /** Database */
+    const database = new DrizzleDatabaseService();
+    dependencies.bind(DI_TOKENS.database).toConstant(database);
 
     return dependencies;
 }

@@ -1,6 +1,6 @@
 import { Endpoint } from "../../models/endpoints";
-import { database } from "../../services/db/drizzle";
-import { usersTable } from "../../services/db/schema";
+import { DI_TOKENS } from "../../services/bootstrap";
+import { usersTable } from "../../services/db/drizzle/schema";
 import { WebserverEndpoint } from "../WebserverEndpoint";
 
 @Endpoint
@@ -18,6 +18,7 @@ export class RegisterEndpoint extends WebserverEndpoint {
 
             const hashedPassword = await Bun.password.hash(password);
 
+            const database = await this.container.get(DI_TOKENS.database).getConnection();
             const user = await database.insert(usersTable)
                 .values({
                     username,

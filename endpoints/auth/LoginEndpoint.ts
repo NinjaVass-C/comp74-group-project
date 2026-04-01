@@ -1,6 +1,5 @@
 import { eq } from "drizzle-orm";
-import { database } from "../../services/db/drizzle";
-import { usersTable } from '../../services/db/schema';
+import { usersTable } from '../../services/db/drizzle/schema';
 import { WebserverEndpoint } from "../WebserverEndpoint";
 import { SignJWT } from "jose";
 import { DI_TOKENS } from "../../services/bootstrap";
@@ -21,6 +20,7 @@ export class LoginEndpoint extends WebserverEndpoint {
                 );
             }
 
+            const database = await this.container.get(DI_TOKENS.database).getConnection();
             const user = database.select()
                             .from(usersTable)
                             .where(eq(usersTable.username, username))

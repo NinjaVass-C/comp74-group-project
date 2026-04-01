@@ -2,7 +2,7 @@ import type { Container } from "brandi";
 import type { BunRequest } from "bun";
 
 export class WebserverEndpoint {
-    protected container?: Container;
+    protected container!: Container;
 
     get(request: Request): Promise<Response> {
         throw new Error("Method not implemented.");
