@@ -1,0 +1,23 @@
+meta {
+  name: /api/transaction/withdraw
+  type: http
+  seq: 12
+}
+
+post {
+  url: http://localhost:3000/api/transactions/deposit
+  body: json
+  auth: bearer
+}
+
+body:json {
+  {
+    "wallet": 5,
+    "amount": 100
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

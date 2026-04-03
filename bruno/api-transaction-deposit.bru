@@ -1,18 +1,19 @@
 meta {
-  name: /api/wallets/new
+  name: /api/transaction/deposit
   type: http
   seq: 10
 }
 
 post {
-  url: http://localhost:3000/api/wallets/new
+  url: http://localhost:3000/api/transactions/deposit
   body: json
   auth: bearer
 }
 
 body:json {
   {
-    "symbol": "AAPL"
+    "wallet": 5,
+    "amount": 100
   }
 }
 
