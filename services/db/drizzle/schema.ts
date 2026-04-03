@@ -16,5 +16,17 @@ export const walletsTable = sqliteTable("wallets", {
     createdAt: text().notNull().default(sql`CURRENT_TIMESTAMP`),
 })
 
+export const transactionsTable = sqliteTable("transactions", {
+    id: int().primaryKey({ autoIncrement: true }),
+    payeeId: int().notNull(),
+    payeeWalletId: int().notNull(),
+    payerId: int().notNull(),
+    payerWalletId: int().notNull(),
+    amount: int().notNull(),
+    symbol: text().notNull(),
+    createdAt: text().default(sql`CURRENT_TIMESTAMP`),
+})
+
 export type User = InferSelectModel<typeof usersTable>;
 export type Wallet = InferSelectModel<typeof walletsTable>;
+export type Transaction = InferSelectModel<typeof transactionsTable>;

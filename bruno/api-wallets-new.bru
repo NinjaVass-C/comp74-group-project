@@ -1,13 +1,17 @@
 meta {
   name: /api/wallets/new
   type: http
-  seq: 9
+  seq: 10
 }
 
 post {
   url: http://localhost:3000/api/wallets/new
   body: json
-  auth: inherit
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyLCJ1c2VybmFtZSI6InRlc3R1c2VyMiJ9LCJleHAiOjE3NzUxODA2ODd9.Un9Txw_Jq9t7O1dG0ejS9PzYqMg1zVIrXFq87EfG9YU
 }
 
 body:json {
