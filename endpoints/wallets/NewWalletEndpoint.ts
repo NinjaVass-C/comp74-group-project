@@ -4,6 +4,9 @@ import { WebserverEndpoint } from "../WebserverEndpoint";
 import type { TokenPayload } from "../../models/auth/TokenPayload";
 import { walletsTable } from "../../services/db/drizzle/schema";
 import { DI_TOKENS } from "../../services/bootstrap";
+import {RequireAuth} from "../../utils/RequireAuth.ts";
+import { ErrorResponse } from "../../utils/ErrorResponse.ts";
+import {ValidateString} from "../../utils/ValidationHelpers.ts";
 
 @Endpoint
 export class NewWalletsEndpoint extends WebserverEndpoint {
@@ -14,47 +17,23 @@ export class NewWalletsEndpoint extends WebserverEndpoint {
             const response = await request.json();
             symbol = response.symbol;
 
-            if (!symbol || typeof symbol !== 'string' || symbol.trim() === '') {
-                return Promise.resolve(
-                    Response.json(
-                        { error: "Missing required field: symbol" },
-                        { status: 400 }
-                    )
-                );
+            if (!ValidateString(symbol)) {
+                return ErrorResponse("Missing required field: symbol.", 400);
             }
         } catch (error) {
-            return Promise.resolve(
-                Response.json(
-                    { error: "Invalid JSON body", details: error instanceof Error ? error.message : String(error) },
-                    { status: 400 }
-                )
-            );
+            return ErrorResponse("Invalid JSON body", 400, error instanceof Error ? error.message : String(error))
         }
 
-        const authHeader = request.headers.get("Authorization");
-        if (!authHeader || !authHeader.startsWith("Bearer ")) {
-            return Promise.resolve(
-                Response.json(
-                    { error: "Missing or invalid Authorization header" },
-                    { status: 401 }
-                )
-            );
+        const auth = await RequireAuth(request);
+        if (!auth.success) {
+            return auth.error;
         }
-
-        const token = authHeader.substring(7); // remove bearer
-
-        const userToken = await jwtVerify<TokenPayload>(token, new TextEncoder().encode(process.env.JWT_SECRET));
-        if (!userToken) {
-            return Response.json(
-                { error: "Invalid token." },
-                { status: 401 }
-            );
-        }
+        const userToken = auth.user;
 
         const database = await this.container.get(DI_TOKENS.database).getConnection();
         const wallet = database.insert(walletsTable)
             .values({
-                userId: userToken.payload.user.id,
+                userId: userToken.user.id,
                 balance: 0,
                 symbol: symbol.trim()
             })

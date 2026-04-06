@@ -6,6 +6,8 @@ import { DI_TOKENS } from "../../services/bootstrap";
 import { LogSeverity } from "../../models/logging/LogSeverity";
 import { TokenPayload } from "../../models/auth/TokenPayload";
 import { Endpoint } from "../../models/endpoints";
+import {ErrorResponse} from "../../utils/ErrorResponse.ts";
+import {ValidateString} from "../../utils/ValidationHelpers.ts";
 
 @Endpoint
 export class LoginEndpoint extends WebserverEndpoint {
@@ -13,11 +15,8 @@ export class LoginEndpoint extends WebserverEndpoint {
         try {
             const { username, password } = await request.json();
 
-            if (!username || !password) {
-                return Response.json(
-                    { error: "Username and password are required." },
-                    { status: 400 }
-                );
+            if (!ValidateString(username) || !ValidateString(password)) {
+                return ErrorResponse("Username and password are required.", 400);
             }
 
             const database = await this.container.get(DI_TOKENS.database).getConnection();
@@ -27,19 +26,13 @@ export class LoginEndpoint extends WebserverEndpoint {
                             .get();
 
             if (!user) {
-                return Response.json(
-                    { error: "Invalid username or password." },
-                    { status: 401 }
-                );
+                return ErrorResponse("Invalid username or password.", 401);
             }
 
             const passwordMatch = await Bun.password.verify(password, user.password);
 
             if (!passwordMatch) {
-                return Response.json(
-                    { error: "Invalid username or password." },
-                    { status: 401 }
-                );
+                return ErrorResponse("Invalid username or password.", 401);
             }
 
             const encoder = new TextEncoder().encode(process.env.JWT_SECRET!);

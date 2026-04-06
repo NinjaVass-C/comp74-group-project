@@ -1,11 +1,12 @@
 import { eq } from "drizzle-orm";
 import { usersTable } from "../../services/db/drizzle/schema";
 import { WebserverEndpoint } from "../WebserverEndpoint";
-import { jwtVerify, SignJWT } from "jose";
+import { jwtVerify } from "jose";
 import { DI_TOKENS } from "../../services/bootstrap";
 import { LogSeverity } from "../../models/logging/LogSeverity";
 import { TokenPayload } from "../../models/auth/TokenPayload";
 import { Endpoint } from "../../models/endpoints";
+import {ErrorResponse} from "../../utils/ErrorResponse.ts";
 
 @Endpoint
 export class VerifyTokenEndpoint extends WebserverEndpoint {
@@ -14,18 +15,12 @@ export class VerifyTokenEndpoint extends WebserverEndpoint {
             const { token } = await request.json();
 
             if (!token) {
-                return Response.json(
-                    { error: "Token is required." },
-                    { status: 400 }
-                );
+                return ErrorResponse("Token is required.", 400);
             }
 
             const userToken = await jwtVerify<TokenPayload>(token, new TextEncoder().encode(process.env.JWT_SECRET));
             if (!userToken) {
-                return Response.json(
-                    { error: "Invalid token." },
-                    { status: 401 }
-                );
+                return ErrorResponse("Invalid token.", 401);
             }
 
             const database = await this.container.get(DI_TOKENS.database).getConnection();
@@ -34,10 +29,7 @@ export class VerifyTokenEndpoint extends WebserverEndpoint {
                 .get();
 
             if (!user) {
-                return Response.json(
-                    { error: "Invalid token." },
-                    { status: 401 }
-                );
+                return ErrorResponse("Invalid token.", 401)
             }
 
             return Response.json(

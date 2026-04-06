@@ -5,15 +5,21 @@ meta {
 }
 
 post {
-  url: http://localhost:3000/api/transactions/withdraw
+  url: http://localhost:3000/api/transactions/transfer
   body: json
   auth: bearer
 }
 
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyLCJ1c2VybmFtZSI6InRlc3R1c2VyMiJ9LCJleHAiOjE3NzU1MjMwMzl9.B50ciyprB0JfOfDELPgVcKFMnVotKwDEUnwHY9cEkjQ
+}
+
 body:json {
   {
-    "wallet": 1,
-    "amount": 100
+    "payee": 1,
+    "payeeWallet": 1,
+    "amount": 200,
+    "payerWallet": 2
   }
 }
 
