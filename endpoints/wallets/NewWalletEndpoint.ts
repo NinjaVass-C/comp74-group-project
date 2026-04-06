@@ -6,6 +6,7 @@ import { walletsTable } from "../../services/db/drizzle/schema";
 import { DI_TOKENS } from "../../services/bootstrap";
 import {RequireAuth} from "../../utils/RequireAuth.ts";
 import { ErrorResponse } from "../../utils/ErrorResponse.ts";
+import {ValidateString} from "../../utils/ValidationHelpers.ts";
 
 @Endpoint
 export class NewWalletsEndpoint extends WebserverEndpoint {
@@ -16,7 +17,7 @@ export class NewWalletsEndpoint extends WebserverEndpoint {
             const response = await request.json();
             symbol = response.symbol;
 
-            if (!symbol || typeof symbol !== 'string' || symbol.trim() === '') {
+            if (!ValidateString(symbol)) {
                 return ErrorResponse("Missing required field: symbol.", 400);
             }
         } catch (error) {

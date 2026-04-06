@@ -7,9 +7,10 @@ import {and, eq, sql} from 'drizzle-orm';
 import { DI_TOKENS } from "../../services/bootstrap";
 import { ErrorResponse } from "../../utils/ErrorResponse";
 import {RequireAuth} from "../../utils/RequireAuth.ts";
+import {ValidateNumber} from "../../utils/ValidationHelpers.ts";
 
 @Endpoint
-export class TransferTransactionEndpoint extends WebserverEndpoint {
+export class WithdrawBalanceTransactionEndpoint extends WebserverEndpoint {
     override async post(request: Request): Promise<Response> {
         let wallet = null;
         let amount = null;
@@ -17,10 +18,10 @@ export class TransferTransactionEndpoint extends WebserverEndpoint {
             const response = await request.json();
             wallet = response.wallet;
             amount = response.amount;
-            if (!wallet || typeof wallet !== 'number' || wallet <=0) {
-                return ErrorResponse("Missing required field: payeeWallet", 400)
+            if (!ValidateNumber(wallet, true)) {
+                return ErrorResponse("Missing required field: wallet", 400)
             }
-            if (!amount || typeof amount !== 'number' || amount <=0) {
+            if (!ValidateNumber(amount, true)) {
                 return ErrorResponse("Missing required field: amount", 400)
             }
         } catch (error) {

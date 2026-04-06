@@ -1,14 +1,12 @@
-import { jwtVerify } from "jose";
 import { Endpoint } from "../../models/endpoints";
 import { WebserverEndpoint } from "../WebserverEndpoint";
-import type { TokenPayload } from "../../models/auth/TokenPayload";
 import {transactionsTable} from "../../services/db/drizzle/schema";
 import {eq, or} from 'drizzle-orm';
 import { DI_TOKENS } from "../../services/bootstrap";
 import {RequireAuth} from "../../utils/RequireAuth.ts";
 
 @Endpoint
-export class WalletsListEndpoint extends WebserverEndpoint {
+export class ViewTransactionsEndpoint extends WebserverEndpoint {
     override async get(request: Request): Promise<Response> {
         const auth = await RequireAuth(request);
         if (!auth.success) {

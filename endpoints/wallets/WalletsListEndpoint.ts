@@ -1,7 +1,5 @@
-import { jwtVerify } from "jose";
 import { Endpoint } from "../../models/endpoints";
 import { WebserverEndpoint } from "../WebserverEndpoint";
-import type { TokenPayload } from "../../models/auth/TokenPayload";
 import { walletsTable } from "../../services/db/drizzle/schema";
 import { eq } from 'drizzle-orm';
 import { DI_TOKENS } from "../../services/bootstrap";

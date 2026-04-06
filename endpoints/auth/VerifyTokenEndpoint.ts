@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { usersTable } from "../../services/db/drizzle/schema";
 import { WebserverEndpoint } from "../WebserverEndpoint";
-import { jwtVerify, SignJWT } from "jose";
+import { jwtVerify } from "jose";
 import { DI_TOKENS } from "../../services/bootstrap";
 import { LogSeverity } from "../../models/logging/LogSeverity";
 import { TokenPayload } from "../../models/auth/TokenPayload";

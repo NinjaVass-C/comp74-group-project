@@ -3,6 +3,7 @@ import { DI_TOKENS } from "../../services/bootstrap";
 import { usersTable } from "../../services/db/drizzle/schema";
 import { WebserverEndpoint } from "../WebserverEndpoint";
 import {ErrorResponse} from "../../utils/ErrorResponse.ts";
+import {ValidateString} from "../../utils/ValidationHelpers.ts";
 
 @Endpoint
 export class RegisterEndpoint extends WebserverEndpoint {
@@ -10,7 +11,7 @@ export class RegisterEndpoint extends WebserverEndpoint {
         try {
             const { username, password } = await request.json();
 
-            if (!username || !password) {
+            if (!ValidateString(username) || !ValidateString(password)) {
                 return ErrorResponse("Username and password is required.", 400);
             }
 

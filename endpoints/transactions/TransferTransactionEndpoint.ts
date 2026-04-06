@@ -1,12 +1,11 @@
-import { jwtVerify } from "jose";
 import { Endpoint } from "../../models/endpoints";
 import { WebserverEndpoint } from "../WebserverEndpoint";
-import type { TokenPayload } from "../../models/auth/TokenPayload";
 import { walletsTable, usersTable, transactionsTable } from "../../services/db/drizzle/schema";
 import {and, eq, sql} from 'drizzle-orm';
 import { DI_TOKENS } from "../../services/bootstrap";
 import {RequireAuth} from "../../utils/RequireAuth.ts";
 import {ErrorResponse} from "../../utils/ErrorResponse.ts";
+import {ValidateNumber} from "../../utils/ValidationHelpers.ts";
 
 @Endpoint
 export class TransferTransactionEndpoint extends WebserverEndpoint {
@@ -21,16 +20,16 @@ export class TransferTransactionEndpoint extends WebserverEndpoint {
             payee = response.payee;
             payerWallet = response.payerWallet;
             amount = response.amount;
-            if (!payeeWallet || typeof payeeWallet !== 'number' || payeeWallet <=0) {
+            if (!ValidateNumber(payeeWallet, true)) {
                 return ErrorResponse("Missing required field: payeeWallet", 400);
             }
-            if (!payee || typeof payee !== 'number' || payee <=0) {
+            if (!ValidateNumber(payee, true)) {
                 return ErrorResponse("Missing required field: payee", 400);
             }
-            if (!payerWallet || typeof payerWallet !== 'number' || payerWallet <=0) {
+            if (!ValidateNumber(payerWallet, true)) {
                 return ErrorResponse("Missing required field: payerWallet", 400);
             }
-            if (!amount || typeof amount !== 'number' || amount <=0) {
+            if (!ValidateNumber(amount, true)) {
                 return ErrorResponse("Missing required field: amount", 400);
             }
         } catch (error) {
@@ -69,7 +68,6 @@ export class TransferTransactionEndpoint extends WebserverEndpoint {
             return ErrorResponse("Insufficient Funds.", 422);
         }
         // all checks are valid, update and insert
-
 
         await database.update(walletsTable).set( { balance: sql`${walletsTable.balance} - ${amount}` })
             .where(eq(walletsTable.id, payerWallet));
