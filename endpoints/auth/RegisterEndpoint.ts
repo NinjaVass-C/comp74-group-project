@@ -2,6 +2,7 @@ import { Endpoint } from "../../models/endpoints";
 import { DI_TOKENS } from "../../services/bootstrap";
 import { usersTable } from "../../services/db/drizzle/schema";
 import { WebserverEndpoint } from "../WebserverEndpoint";
+import {ErrorResponse} from "../../utils/ErrorResponse.ts";
 
 @Endpoint
 export class RegisterEndpoint extends WebserverEndpoint {
@@ -10,10 +11,7 @@ export class RegisterEndpoint extends WebserverEndpoint {
             const { username, password } = await request.json();
 
             if (!username || !password) {
-                return Response.json(
-                    { error: "Username and password are required." },
-                    { status: 400 }
-                );
+                return ErrorResponse("Username and password is required.", 400);
             }
 
             const hashedPassword = await Bun.password.hash(password);

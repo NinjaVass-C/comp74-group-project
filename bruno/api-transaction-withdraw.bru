@@ -5,14 +5,14 @@ meta {
 }
 
 post {
-  url: http://localhost:3000/api/transactions/deposit
+  url: http://localhost:3000/api/transactions/withdraw
   body: json
   auth: bearer
 }
 
 body:json {
   {
-    "wallet": 5,
+    "wallet": 2,
     "amount": 100
   }
 }

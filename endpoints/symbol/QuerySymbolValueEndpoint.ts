@@ -2,6 +2,7 @@ import type { BunRequest } from "bun";
 import { WebserverEndpoint } from "../WebserverEndpoint";
 import YahooFinance from "yahoo-finance2/src/index.ts";
 import { Endpoint } from "../../models/endpoints";
+import {ErrorResponse} from "../../utils/ErrorResponse.ts";
 
 @Endpoint
 export class QuerySymbolValueEndpoint extends WebserverEndpoint {
@@ -9,12 +10,7 @@ export class QuerySymbolValueEndpoint extends WebserverEndpoint {
         const { symbol } = request.params;
 
         if (!symbol) {
-            return Promise.resolve(
-                Response.json(
-                    { error: "Missing 'symbol' query parameter" },
-                    { status: 400 }
-                )
-            );
+            return ErrorResponse("Missing 'symbol' query parameter.", 400)
         }
 
         const yahooFinance = new YahooFinance({ suppressNotices: ['yahooSurvey'] });
@@ -24,12 +20,7 @@ export class QuerySymbolValueEndpoint extends WebserverEndpoint {
         });
 
         if (!quote) {
-            return Promise.resolve(
-                Response.json(
-                    { error: `No data found for symbol: ${symbol}` },
-                    { status: 404 }
-                )
-            );
+            return ErrorResponse("No data found for symbol: ${symbol}.", 404)
         }
 
         return Promise.resolve(
