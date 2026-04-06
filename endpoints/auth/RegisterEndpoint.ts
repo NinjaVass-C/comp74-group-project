@@ -1,23 +1,34 @@
 import { Endpoint } from "../../models/endpoints";
 import { DI_TOKENS } from "../../services/bootstrap";
-import { usersTable } from "../../services/db/drizzle/schema";
+import {usersTable, walletsTable} from "../../services/db/drizzle/schema";
 import { WebserverEndpoint } from "../WebserverEndpoint";
 import {ErrorResponse} from "../../utils/ErrorResponse.ts";
 import {ValidateString} from "../../utils/ValidationHelpers.ts";
+import {eq} from "drizzle-orm";
 
 @Endpoint
 export class RegisterEndpoint extends WebserverEndpoint {
     override async post(request: Request): Promise<Response> {
         try {
-            const { username, password } = await request.json();
+            const { rawUsername, password } = await request.json();
 
-            if (!ValidateString(username) || !ValidateString(password)) {
+            if (!ValidateString(rawUsername) || !ValidateString(password)) {
                 return ErrorResponse("Username and password is required.", 400);
+            }
+            const username = rawUsername.trim();
+            const database = await this.container.get(DI_TOKENS.database).getConnection();
+
+            // Validate the username does not exist before creation
+            const usernameExists = database.select().from(usersTable)
+                .where(eq(usersTable.username, username))
+                .get();
+            if (usernameExists) {
+                return ErrorResponse("Username is already taken", 400)
             }
 
             const hashedPassword = await Bun.password.hash(password);
 
-            const database = await this.container.get(DI_TOKENS.database).getConnection();
+
             const user = await database.insert(usersTable)
                 .values({
                     username,
