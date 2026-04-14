@@ -1,0 +1,505 @@
+{
+  "info": {
+    "_postman_id": "7c53ddf4-4f34-4df7-8c75-5f2f6a1c3f8a",
+    "name": "COMP74 API",
+    "description": "Postman collection for the COMP74 web services API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Index",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", ""]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response has running message', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.message).to.eql('COMP74 API is running');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Help",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/help",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "help"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Help payload includes routes', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('routes');",
+                  "  pm.expect(body).to.have.property('help');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rawUsername\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Response includes user', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('user');",
+                  "  if (Array.isArray(body.user) && body.user.length > 0) {",
+                  "    pm.environment.set('userId', body.user[0].id);",
+                  "  }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Token is returned and stored', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('token');",
+                  "  pm.environment.set('token', body.token);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verify Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/verify_token",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "verify_token"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Token is valid', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.message).to.eql('Token is valid.');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Wallets",
+      "item": [
+        {
+          "name": "List Wallets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/wallets",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "wallets"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response includes wallets', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('wallets');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "New Wallet",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"symbol\": \"{{symbol}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/wallets/new",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "wallets", "new"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response includes wallet', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('wallet');",
+                  "  if (body.wallet && body.wallet.id !== undefined) {",
+                  "    pm.environment.set('walletId', body.wallet.id);",
+                  "  }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "List Transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response includes transactions', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('transactions');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Deposit",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"wallet\": {{walletId}},\n  \"amount\": {{amount}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/deposit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions", "deposit"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response includes add', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('add');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Withdraw",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"wallet\": {{walletId}},\n  \"amount\": {{amount}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/withdraw",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions", "withdraw"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response includes withdraw', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('withdraw');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Symbol",
+      "item": [
+        {
+          "name": "Quote",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/symbol/{{symbol}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "symbol", "{{symbol}}"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Quote Value",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/symbol/{{symbol}}/value",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "symbol", "{{symbol}}", "value"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response includes value', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('value');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "username",
+      "value": "demo"
+    },
+    {
+      "key": "password",
+      "value": "secret"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "symbol",
+      "value": "BTC"
+    },
+    {
+      "key": "walletId",
+      "value": "1"
+    },
+    {
+      "key": "amount",
+      "value": "10"
+    }
+  ]
+}

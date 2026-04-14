@@ -16,7 +16,7 @@ export class ViewTransactionsEndpoint extends WebserverEndpoint {
 
         const database = await this.container.get(DI_TOKENS.database).getConnection();
         const transactions = database.select().from(transactionsTable)
-            .where(or(eq(transactionsTable.payeeId, userToken.user.id), eq(transactionsTable.payerId, userToken.payload.user.id)))
+            .where(or(eq(transactionsTable.payeeId, userToken.user.id), eq(transactionsTable.payerId, userToken.user.id)))
             .all();
 
         return Response.json(
