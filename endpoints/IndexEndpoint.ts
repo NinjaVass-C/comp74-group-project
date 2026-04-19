@@ -3,6 +3,14 @@ import { WebserverEndpoint } from "./WebserverEndpoint";
 
 @Endpoint
 export class IndexEndpoint extends WebserverEndpoint {
+    override openapi = {
+        summary: "Index endpoint to confirm server is running",
+        tags: ["Index"],
+        responses: {
+            200: { description: "Server running" },
+        },
+        auth: false
+    };
     override get(request: Request): Promise<Response> {
         return Promise.resolve(
             Response.json(

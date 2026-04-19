@@ -9,6 +9,36 @@ import {ValidateNumber} from "../../utils/ValidationHelpers.ts";
 
 @Endpoint
 export class DepositBalanceTransactionEndpoint extends WebserverEndpoint {
+    override openapi = {
+        summary: "Deposit Balance To A Wallet associated to the user",
+        tags: ["Transactions"],
+
+        body: {
+            required: ["wallet", "amount"],
+            properties: {
+                wallet: { type: "number" },
+                amount: { type: "number" },
+            }
+        },
+
+        responses: {
+            200: {
+                description: "Deposit Added",
+                body: {
+                    id: {type: "integer", description: "Wallet id based of db pk"},
+                    userId: {type: "integer", description: "User id associated to wallet"},
+                    symbol: {type: "string", description: "Symbol being kept in wallet"},
+                    balance: {type: "number", description: "Balance of wallet"},
+                    createdAt: {type: "string", description: "Timestamp of wallet creation"},
+                }
+            },
+            400: { description: "Invalid request" },
+            401: { description: "Unauthorized" },
+            404: { description: "Wallet not found" },
+        },
+
+        auth: true
+    };
     override async post(request: Request): Promise<Response> {
         let wallet = null;
         let amount = null;

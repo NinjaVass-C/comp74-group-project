@@ -9,6 +9,19 @@ type HelpRoute = {
 
 @Endpoint
 export class HelpEndpoint extends WebserverEndpoint {
+    override openapi = {
+        summary: "Help endpoint that prints off usage of api",
+        tags: ["Index"],
+        responses: {
+            200: {
+                description: "Operation Completed",
+                body: {
+                    help: "object"
+                }
+            },
+        },
+        auth: false
+    };
     override get(request: Request): Promise<Response> {
         const routes = this.container.get(DI_TOKENS.endpoints)
             .flatMap((endpoint): HelpRoute[] => endpoint.toBunRoute().map(route => ({

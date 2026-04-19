@@ -10,6 +10,31 @@ import {ValidateString} from "../../utils/ValidationHelpers.ts";
 
 @Endpoint
 export class NewWalletsEndpoint extends WebserverEndpoint {
+    override openapi = {
+        summary: "Endpoint for creating new wallets for a user",
+        tags: ["Wallets"],
+        body: {
+          required: ["symbol"],
+          properties: {
+              symbol: {type: "string"}
+          }
+        },
+        responses: {
+            200: {
+                description: "Wallet Created",
+                body: {
+                    id: {type: "integer", description: "Wallet id based of db pk"},
+                    userId: {type: "integer", description: "User id associated to wallet"},
+                    symbol: {type: "string", description: "Symbol being kept in wallet"},
+                    balance: {type: "number", description: "Balance of wallet"},
+                    createdAt: {type: "string", description: "Timestamp of wallet creation"},
+                }
+            },
+            400: {description: "Invalid Request"},
+            401: {description: "Unauthorized"}
+        },
+        auth: true
+    };
     override async post(request: Request): Promise<Response> {
         let symbol = null;
 

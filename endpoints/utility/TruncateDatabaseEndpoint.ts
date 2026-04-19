@@ -6,6 +6,14 @@ import * as schema from "../../services/db/drizzle/schema.ts"
 
 @Endpoint
 export class TruncateDatabaseEndpoint extends WebserverEndpoint {
+    override openapi = {
+        summary: "Helper endpoint for truncating data",
+        tags: ["Utility"],
+        responses: {
+            200: { description: "Operation Completed" },
+        },
+        auth: false
+    };
     override async delete(request: Request): Promise<Response> {
         const database = await this.container.get(DI_TOKENS.database).getConnection();
         await reset(database, schema)
