@@ -1,4 +1,3 @@
-// src/docs/openapi.ts
 import { ENDPOINTS } from "../models/endpoints";
 
 const resolveSchema = (value: any): any => {
