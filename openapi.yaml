@@ -1,0 +1,524 @@
+openapi: 3.0.0
+info:
+  title: Crypto Trading API
+  version: 1.0.0
+paths:
+  /help:
+    get:
+      summary: Help endpoint that prints off usage of api
+      tags: &a1
+        - Index
+      responses:
+        "200":
+          description: Operation Completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  help:
+                    type: object
+  /api/help:
+    get:
+      summary: Help endpoint that prints off usage of api
+      tags: *a1
+      responses:
+        "200":
+          description: Operation Completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  help:
+                    type: object
+  /:
+    get:
+      summary: Index endpoint to confirm server running
+      tags: &a2
+        - Index
+      responses:
+        "200":
+          description: Server running
+  /api/:
+    get:
+      summary: Index endpoint to confirm server running
+      tags: *a2
+      responses:
+        "200":
+          description: Server running
+  /api/wallets/new:
+    post:
+      summary: Endpoint for creating new wallets
+      tags:
+        - Wallets
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - symbol
+              properties:
+                symbol:
+                  type: string
+      responses:
+        "200":
+          description: Wallet Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  userId:
+                    type: integer
+                  symbol:
+                    type: string
+                  balance:
+                    type: number
+                  createdAt:
+                    type: string
+        "400":
+          description: Invalid Request
+        "401":
+          description: Unauthorized
+  /api/wallets:
+    get:
+      summary: View Wallets for user
+      tags:
+        - Wallets
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: Wallets Listed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  wallets:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        userId:
+                          type: integer
+                        symbol:
+                          type: string
+                        balance:
+                          type: number
+                        createdAt:
+                          type: string
+        "401":
+          description: Unauthorized
+  /api/utility/seed:
+    post:
+      summary: Helper endpoint for resetting database with seeder data
+      tags:
+        - Utility
+      responses:
+        "200":
+          description: Operation Completed
+  /api/utility/truncate:
+    delete:
+      summary: Helper endpoint for truncating data
+      tags:
+        - Utility
+      responses:
+        "200":
+          description: Operation Completed
+  /api/transactions/deposit:
+    post:
+      summary: Deposit Balance To wallet
+      tags:
+        - Transactions
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet
+                - amount
+              properties:
+                wallet:
+                  type: number
+                amount:
+                  type: number
+      responses:
+        "200":
+          description: Deposit Added
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  userId:
+                    type: integer
+                  symbol:
+                    type: string
+                  balance:
+                    type: number
+                  createdAt:
+                    type: string
+        "400":
+          description: Invalid request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Wallet not found
+  /api/transactions/transfer:
+    post:
+      summary: Transfer funds between wallets
+      tags:
+        - Transactions
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - payeeWallet
+                - payee
+                - payerWallet
+                - amount
+              properties:
+                payeeWallet:
+                  type: number
+                payee:
+                  type: number
+                payerWallet:
+                  type: number
+                amount:
+                  type: number
+      responses:
+        "200":
+          description: Transaction Completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  payeeId:
+                    type: integer
+                  payeeWalletId:
+                    type: integer
+                  payerId:
+                    type: integer
+                  payerWalletId:
+                    type: integer
+                  amount:
+                    type: number
+                  symbol:
+                    type: string
+                  createdAt:
+                    type: string
+        "400":
+          description: Invalid request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Wallet not found
+        "422":
+          description: Insufficient funds
+  /api/transactions:
+    get:
+      summary: View transactions for user
+      tags:
+        - Transactions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: Transactions Listed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        payeeId:
+                          type: integer
+                        payeeWalletId:
+                          type: integer
+                        payerId:
+                          type: integer
+                        payerWalletId:
+                          type: integer
+                        amount:
+                          type: number
+                        symbol:
+                          type: string
+                        createdAt:
+                          type: string
+        "401":
+          description: Unauthorized
+  /api/transactions/withdraw:
+    post:
+      summary: Withdraw balance from wallet
+      tags:
+        - Transactions
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet
+                - amount
+              properties:
+                wallet:
+                  type: number
+                amount:
+                  type: number
+      responses:
+        "200":
+          description: Withdraw Completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  userId:
+                    type: integer
+                  symbol:
+                    type: string
+                  balance:
+                    type: number
+                  createdAt:
+                    type: string
+        "400":
+          description: Invalid request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Wallet not found
+        "422":
+          description: Insufficient funds
+  /api/symbol/:symbol:
+    get:
+      summary: Query for a symbol through yahoo finance
+      tags:
+        - Symbol
+      parameters:
+        - name: symbol
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Symbol found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  quote:
+                    type: object
+        "400":
+          description: Invalid body
+        "404":
+          description: No symbol found
+  /api/symbol/:symbol/value:
+    get:
+      summary: Query for a symbol through yahoo finance, only getting values relating
+        to price
+      tags:
+        - Symbol
+      parameters:
+        - name: symbol
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Symbol found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  quote:
+                    type: object
+        "400":
+          description: Invalid body
+        "404":
+          description: No symbol found
+  /api/docs/openapi:
+    get:
+      summary: Endpoint for generating openapi docs
+      tags:
+        - Documentation
+      responses:
+        "200":
+          description: Operation Completed
+  /api/auth/login:
+    post:
+      summary: Login endpoint to allow user to get auth token
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        "400":
+          description: Invalid request
+        "401":
+          description: Unauthorized
+        "500":
+          description: Server error
+  /api/auth/register:
+    post:
+      summary: Register endpoint to create new account
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "201":
+          description: Account created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  username:
+                    type: string
+                  password:
+                    type: string
+                  createdAt:
+                    type: string
+        "400":
+          description: Invalid request
+        "500":
+          description: Server error
+  /api/auth/verify_token:
+    post:
+      summary: Verify token is still valid
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  username:
+                    type: string
+        "400":
+          description: Invalid request
+        "401":
+          description: Unauthorized
+        "500":
+          description: Server error
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

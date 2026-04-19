@@ -3,6 +3,7 @@ import { ENDPOINTS } from "./models/endpoints";
 import type { Container } from "brandi";
 import { LogSeverity } from "./models/logging/LogSeverity";
 import { importAllEndpoints } from "./services/imports";
+import { generateOpenApi } from "./docs/openapi";
 
 /**
  * Main entry point for the application. 

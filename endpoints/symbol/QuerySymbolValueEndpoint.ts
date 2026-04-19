@@ -6,6 +6,25 @@ import {ErrorResponse} from "../../utils/ErrorResponse.ts";
 
 @Endpoint
 export class QuerySymbolValueEndpoint extends WebserverEndpoint {
+    override openapi = {
+        summary: "Query for a symbol through yahoo finance, only getting values relating to price",
+        tags: ["Symbol"],
+
+        query: {
+            symbol: { type: "string", required: true },
+        },
+        responses: {
+            200: {
+                description: "Symbol found",
+                body: {
+                    quote: "object"
+                }
+            },
+            400: { description: "Invalid body" },
+            404: { description: "No symbol found" },
+        },
+        auth: false
+    };
     override async get(request: BunRequest): Promise<Response> {
         const { symbol } = request.params;
 

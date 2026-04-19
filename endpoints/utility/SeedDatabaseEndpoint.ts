@@ -7,6 +7,14 @@ import * as schema from "../../services/db/drizzle/schema.ts"
 
 @Endpoint
 export class SeedDatabaseEndpoint extends WebserverEndpoint {
+    openapi = {
+        summary: "Helper endpoint for resetting database with seeder data",
+        tags: ["Utility"],
+        responses: {
+            200: { description: "Operation Completed" },
+        },
+        auth: false
+    };
     override async post(request: Request): Promise<Response> {
         const database = await this.container.get(DI_TOKENS.database).getConnection();
         const seederPassword = await Bun.password.hash("Test123");

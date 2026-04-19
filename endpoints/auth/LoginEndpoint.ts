@@ -11,6 +11,32 @@ import {ValidateString} from "../../utils/ValidationHelpers.ts";
 
 @Endpoint
 export class LoginEndpoint extends WebserverEndpoint {
+    override openapi = {
+        summary: "Login endpoint to allow user to get auth token",
+        tags: ["Auth"],
+
+        body: {
+            required: ["username", "password"],
+            properties: {
+                username: {type: "string"},
+                password: {type: "string"},
+            }
+        },
+
+        responses: {
+            200: {
+                description: "Login successful",
+                body: {
+                    token: {type: "string", description: "Authentication token"},
+                }
+            },
+            400: { description: "Invalid request" },
+            401: { description: "Unauthorized" },
+            500: { description: "Server error" },
+        },
+
+        auth: false
+    };
     override async post(request: Request): Promise<Response> {
         try {
             const { username, password } = await request.json();

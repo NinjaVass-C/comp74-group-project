@@ -10,6 +10,34 @@ import {ErrorResponse} from "../../utils/ErrorResponse.ts";
 
 @Endpoint
 export class VerifyTokenEndpoint extends WebserverEndpoint {
+    override openapi = {
+        summary: "Verify token is still valid",
+        tags: ["Auth"],
+
+        body: {
+            required: ["token"],
+            properties: {
+                token: {type: "string"},
+            }
+        },
+
+        responses: {
+            200: {
+                description: "Login successful",
+                body: {
+                    id: {type: "integer", description: "User id based of db pk"},
+                    username: {type: "string", description: "Users name for logins"},
+                }
+            },
+            400: { description: "Invalid request" },
+            401: { description: "Unauthorized" },
+            500: { description: "Server error" },
+        },
+
+        auth: false
+    };
+
+
     override async post(request: Request): Promise<Response> {
         try {
             const { token } = await request.json();

@@ -8,6 +8,34 @@ import {eq} from "drizzle-orm";
 
 @Endpoint
 export class RegisterEndpoint extends WebserverEndpoint {
+    override openapi = {
+        summary: "Register endpoint to create new account",
+        tags: ["Auth"],
+
+        body: {
+            required: ["username", "password"],
+            properties: {
+                username: {type: "string"},
+                password: {type: "string"},
+            }
+        },
+
+        responses: {
+            201: {
+                description: "Account created successfully",
+                body: {
+                    id: {type: "integer", description: "User id based of db pk"},
+                    username: {type: "string", description: "Users name for logins"},
+                    password: {type: "string", description: "Hashed Password"},
+                    createdAt: {type: "string", description: "Timestamp of account creation"},
+                }
+            },
+            400: { description: "Invalid request" },
+            500: { description: "Server error" },
+        },
+
+        auth: false
+    };
     override async post(request: Request): Promise<Response> {
         try {
             const { rawUsername, password } = await request.json();

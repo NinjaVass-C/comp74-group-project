@@ -20,6 +20,7 @@
     "drizzle-orm": "^0.45.2",
     "drizzle-seed": "^0.3.1",
     "jose": "^6.2.2",
-    "yahoo-finance2": "^3.14.0"
+    "yahoo-finance2": "^3.14.0",
+    "yaml": "^2.8.3"
   }
 }

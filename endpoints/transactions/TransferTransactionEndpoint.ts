@@ -9,6 +9,42 @@ import {ValidateNumber} from "../../utils/ValidationHelpers.ts";
 
 @Endpoint
 export class TransferTransactionEndpoint extends WebserverEndpoint {
+     override openapi = {
+        summary: "Transfer funds between wallets",
+        tags: ["Transactions"],
+
+        body: {
+            required: ["payeeWallet", "payee", "payerWallet", "amount"],
+            properties: {
+                payeeWallet: { type: "number" },
+                payee: { type: "number" },
+                payerWallet: { type: "number" },
+                amount: { type: "number" },
+            }
+        },
+
+        responses: {
+            200: {
+                description: "Transaction Completed",
+                body: {
+                    id: {type: "integer", description: "Transaction id based of db pk"},
+                    payeeId: {type: "integer", description: "User id of the payee"},
+                    payeeWalletId: {type: "integer", description: "Wallet id of the payee"},
+                    payerId: {type: "integer", description: "User id of the payer"},
+                    payerWalletId: {type: "integer", description: "Wallet id of the payer"},
+                    amount: { type: "number", description: "Amount transacted"},
+                    symbol: {type: "string", description: "Symbol that was transacted"},
+                    createdAt: {type: "string", description: "Timestamp when transaction was created"},
+                }
+            },
+            400: { description: "Invalid request" },
+            401: { description: "Unauthorized" },
+            404: { description: "Wallet not found" },
+            422: { description: "Insufficient funds" }
+        },
+
+        auth: true
+    };
     override async post(request: Request): Promise<Response> {
         let payee = null;
         let payeeWallet = null;

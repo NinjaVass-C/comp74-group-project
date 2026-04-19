@@ -9,6 +9,33 @@ import {ErrorResponse} from "../../utils/ErrorResponse.ts";
 
 @Endpoint
 export class WalletsListEndpoint extends WebserverEndpoint {
+    override openapi = {
+        summary: "View Wallets for user",
+        tags: ["Wallets"],
+        query: {
+            page: { type: "integer", default: 1 },
+            page_size: { type: "integer", default: 10 }
+        },
+        responses: {
+            200: {
+                description: "Wallets Listed",
+                body: {
+                    "wallets": {
+                        type: "array",
+                        items: {
+                            id: {type: "integer", description: "Wallet id based of db pk"},
+                            userId: {type: "integer", description: "User id associated to wallet"},
+                            symbol: {type: "string", description: "Symbol being kept in wallet"},
+                            balance: {type: "number", description: "Balance of wallet"},
+                            createdAt: {type: "string", description: "Timestamp of wallet creation"},
+                        }
+                    }
+                }
+            },
+            401: {description: "Unauthorized"}
+        },
+        auth: true
+    };
     override async get(request: Request): Promise<Response> {
         const auth = await RequireAuth(request);
         if (!auth.success) {
