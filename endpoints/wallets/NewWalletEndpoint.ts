@@ -11,7 +11,7 @@ import {ValidateString} from "../../utils/ValidationHelpers.ts";
 @Endpoint
 export class NewWalletsEndpoint extends WebserverEndpoint {
     override openapi = {
-        summary: "Endpoint for creating new wallets",
+        summary: "Endpoint for creating new wallets for a user",
         tags: ["Wallets"],
         body: {
           required: ["symbol"],

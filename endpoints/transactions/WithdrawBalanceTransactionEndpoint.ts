@@ -12,7 +12,7 @@ import {ValidateNumber} from "../../utils/ValidationHelpers.ts";
 @Endpoint
 export class WithdrawBalanceTransactionEndpoint extends WebserverEndpoint {
     override openapi = {
-        summary: "Withdraw balance from wallet",
+        summary: "Withdraw balance from one of users wallets",
         tags: ["Transactions"],
 
         body: {

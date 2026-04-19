@@ -7,7 +7,7 @@ import * as schema from "../../services/db/drizzle/schema.ts"
 
 @Endpoint
 export class SeedDatabaseEndpoint extends WebserverEndpoint {
-    openapi = {
+    override openapi = {
         summary: "Helper endpoint for resetting database with seeder data",
         tags: ["Utility"],
         responses: {

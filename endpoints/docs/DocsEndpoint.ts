@@ -1,5 +1,4 @@
 import { WebserverEndpoint } from "../WebserverEndpoint.ts"
-import { writeFileSync } from "fs";
 import { generateOpenApi } from "../../docs/openapi.ts";
 import YAML from "yaml";
 import {Endpoint} from "../../models/endpoints.ts";
@@ -7,7 +6,7 @@ import {Endpoint} from "../../models/endpoints.ts";
 @Endpoint
 export class DocsEndpoint extends WebserverEndpoint {
     override openapi = {
-        summary: "Endpoint for generating openapi docs",
+        summary: "Endpoint for generating openapi swagger docs",
         tags: ["Documentation"],
         responses: {
             200: { description: "Operation Completed" },
@@ -16,8 +15,13 @@ export class DocsEndpoint extends WebserverEndpoint {
     };
     override async get(): Promise<Response> {
         const docs = generateOpenApi()
-        const yaml = YAML.stringify(docs);
-        writeFileSync("./openapi.yaml", yaml, "utf8");
+        const yaml = YAML.stringify(docs, {aliasDuplicateObjects: false});
+        const path = './openapi.yaml';
+        const file = Bun.file(path);
+        if (!await file.exists()) {
+            console.log("WRITING")
+            await Bun.write(path, yaml)
+        }
         return Response.json(docs);
     }
 

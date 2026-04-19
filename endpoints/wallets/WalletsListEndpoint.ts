@@ -10,7 +10,7 @@ import {ErrorResponse} from "../../utils/ErrorResponse.ts";
 @Endpoint
 export class WalletsListEndpoint extends WebserverEndpoint {
     override openapi = {
-        summary: "View Wallets for user",
+        summary: "List wallets for current user",
         tags: ["Wallets"],
         query: {
             page: { type: "integer", default: 1 },

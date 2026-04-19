@@ -10,7 +10,7 @@ import {ValidateNumber} from "../../utils/ValidationHelpers.ts";
 @Endpoint
 export class TransferTransactionEndpoint extends WebserverEndpoint {
      override openapi = {
-        summary: "Transfer funds between wallets",
+        summary: "Perform transaction between users wallet and another users wallet",
         tags: ["Transactions"],
 
         body: {

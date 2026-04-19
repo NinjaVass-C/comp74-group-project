@@ -10,7 +10,7 @@ import {ValidateNumber} from "../../utils/ValidationHelpers.ts";
 @Endpoint
 export class DepositBalanceTransactionEndpoint extends WebserverEndpoint {
     override openapi = {
-        summary: "Deposit Balance To wallet",
+        summary: "Deposit Balance To A Wallet associated to the user",
         tags: ["Transactions"],
 
         body: {

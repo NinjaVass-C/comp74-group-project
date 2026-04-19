@@ -9,7 +9,7 @@ import {ValidateNumber} from "../../utils/ValidationHelpers.ts";
 @Endpoint
 export class ViewTransactionsEndpoint extends WebserverEndpoint {
     override openapi = {
-        summary: "View transactions for user",
+        summary: "View past transactions for user",
         tags: ["Transactions"],
         query: {
             page: { type: "integer", default: 1 },

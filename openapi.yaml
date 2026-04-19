@@ -6,7 +6,7 @@ paths:
   /help:
     get:
       summary: Help endpoint that prints off usage of api
-      tags: &a1
+      tags:
         - Index
       responses:
         "200":
@@ -21,7 +21,8 @@ paths:
   /api/help:
     get:
       summary: Help endpoint that prints off usage of api
-      tags: *a1
+      tags:
+        - Index
       responses:
         "200":
           description: Operation Completed
@@ -34,22 +35,23 @@ paths:
                     type: object
   /:
     get:
-      summary: Index endpoint to confirm server running
-      tags: &a2
+      summary: Index endpoint to confirm server is running
+      tags:
         - Index
       responses:
         "200":
           description: Server running
   /api/:
     get:
-      summary: Index endpoint to confirm server running
-      tags: *a2
+      summary: Index endpoint to confirm server is running
+      tags:
+        - Index
       responses:
         "200":
           description: Server running
   /api/wallets/new:
     post:
-      summary: Endpoint for creating new wallets
+      summary: Endpoint for creating new wallets for a user
       tags:
         - Wallets
       security:
@@ -89,7 +91,7 @@ paths:
           description: Unauthorized
   /api/wallets:
     get:
-      summary: View Wallets for user
+      summary: List wallets for current user
       tags:
         - Wallets
       security:
@@ -150,7 +152,7 @@ paths:
           description: Operation Completed
   /api/transactions/deposit:
     post:
-      summary: Deposit Balance To wallet
+      summary: Deposit Balance To A Wallet associated to the user
       tags:
         - Transactions
       security:
@@ -195,7 +197,7 @@ paths:
           description: Wallet not found
   /api/transactions/transfer:
     post:
-      summary: Transfer funds between wallets
+      summary: Perform transaction between users wallet and another users wallet
       tags:
         - Transactions
       security:
@@ -254,7 +256,7 @@ paths:
           description: Insufficient funds
   /api/transactions:
     get:
-      summary: View transactions for user
+      summary: View past transactions for user
       tags:
         - Transactions
       security:
@@ -305,7 +307,7 @@ paths:
           description: Unauthorized
   /api/transactions/withdraw:
     post:
-      summary: Withdraw balance from wallet
+      summary: Withdraw balance from one of users wallets
       tags:
         - Transactions
       security:
@@ -403,7 +405,7 @@ paths:
           description: No symbol found
   /api/docs/openapi:
     get:
-      summary: Endpoint for generating openapi docs
+      summary: Endpoint for generating openapi swagger docs
       tags:
         - Documentation
       responses:
@@ -485,7 +487,7 @@ paths:
           description: Server error
   /api/auth/verify_token:
     post:
-      summary: Verify token is still valid
+      summary: Endpoint to verify if a user token is still active
       tags:
         - Auth
       requestBody:

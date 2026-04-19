@@ -11,7 +11,7 @@ import {ErrorResponse} from "../../utils/ErrorResponse.ts";
 @Endpoint
 export class VerifyTokenEndpoint extends WebserverEndpoint {
     override openapi = {
-        summary: "Verify token is still valid",
+        summary: "Endpoint to verify if a user token is still active",
         tags: ["Auth"],
 
         body: {
