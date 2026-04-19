@@ -87,7 +87,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"rawUsername\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/register",
